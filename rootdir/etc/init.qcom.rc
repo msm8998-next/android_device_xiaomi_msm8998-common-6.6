@@ -193,16 +193,6 @@ service vendor.sensors /vendor/bin/sensors.qti
     capabilities NET_BIND_SERVICE
     task_profiles ServiceCapacityLow
 
-service vendor.cnss-daemon /vendor/bin/cnss-daemon -n -l
-    class late_start
-    user system
-    group system inet net_admin wifi
-    capabilities NET_ADMIN
-    task_profiles ServiceCapacityLow
-
-on property:sys.shutdown.requested=*
-    stop vendor.cnss-daemon
-
 service vendor.loc_launcher /vendor/bin/loc_launcher
     class late_start
     user gps

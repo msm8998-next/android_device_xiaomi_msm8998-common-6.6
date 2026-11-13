@@ -145,19 +145,28 @@ PRODUCT_COPY_FILES += \
 # DebugFS
 PRODUCT_SET_DEBUGFS_RESTRICTIONS := true
 
-# Display
+# Display / Graphics (Mesa + gralloc_gbm_mesa + drm_hwcomposer)
 PRODUCT_PACKAGES += \
-    gralloc.msm8998 \
-    hwcomposer.qcom
+    mesa3d \
+    com.android.hardware.graphics.allocator.gm \
+    dri_gbm \
+    libgbm_mesa \
+    android.hardware.graphics.allocator-service.gm \
+    mapper.gm \
+    com.android.hardware.graphics.composer.drm_hwcomposer_upstream \
+    com.android.hardware.memtrack
+
+$(call soong_config_set,gralloc_gbm_mesa,RELEASE_SM_OPEN_DECLARED_PASSTHROUGH_HAL,$(RELEASE_SM_OPEN_DECLARED_PASSTHROUGH_HAL))
+
+# Firmware & DLKM loader (6.6)
+PRODUCT_COPY_FILES += \
+    vendor/xiaomi/msm8998-common/proprietary/vendor/firmware/a540_gpmu.fw2:$(TARGET_COPY_OUT_ODM)/firmware/qcom/a540_gpmu.fw2 \
+    vendor/xiaomi/msm8998-common/proprietary/vendor/firmware/a540_zap.elf:$(TARGET_COPY_OUT_ODM)/firmware/qcom/msm8998/xiaomi/a540_zap.mbn
 
 PRODUCT_PACKAGES += \
-    android.hardware.graphics.composer@2.1-service \
-    android.hardware.graphics.mapper@3.0-impl-qti-display \
-    android.hardware.graphics.mapper@4.0-impl-qti-display \
-    vendor.qti.hardware.display.allocator-service \
-    vendor.qti.hardware.memtrack-service
-
-$(call soong_config_set_bool,surfaceflinger,register_displayservice,true)
+    all_symlink_firmware_msm8998_common \
+    msm8998_common_firmware_ipa_fws.mbn \
+    dlkm_loader_mainline
 
 # Dolby
 PRODUCT_COPY_FILES += \
@@ -183,10 +192,9 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     android.hardware.biometrics.fingerprint-service.xiaomi
 
-# Gatekeeper
+# Gatekeeper (software AIDL for 6.6 without qseecom)
 PRODUCT_PACKAGES += \
-    android.hardware.gatekeeper@1.0-impl \
-    android.hardware.gatekeeper@1.0-service
+    com.android.hardware.gatekeeper.nonsecure
 
 # GNSS
 PRODUCT_PACKAGES += \
@@ -240,9 +248,6 @@ PRODUCT_SYSTEM_PROPERTIES += \
     persist.vendor.ims.vt.enableadb=0
 endif
 
-# ION
-$(call soong_config_set_bool,libion,legacy_impl,true)
-
 # IRQ
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/msm_irqbalance.conf:$(TARGET_COPY_OUT_VENDOR)/etc/msm_irqbalance.conf
@@ -251,10 +256,9 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/sec_config:$(TARGET_COPY_OUT_VENDOR)/etc/sec_config
 
-# Keymaster
+# Keymint (software AIDL for 6.6 without qseecom)
 PRODUCT_PACKAGES += \
-    android.hardware.keymaster@3.0-impl \
-    android.hardware.keymaster@3.0-service
+    com.android.hardware.keymint.rust_nonsecure
 
 # Lights
 PRODUCT_PACKAGES += \
@@ -263,12 +267,6 @@ PRODUCT_PACKAGES += \
 # Lineage Health
 PRODUCT_PACKAGES += \
     vendor.lineage.health-service.default
-
-# LiveDisplay
-PRODUCT_PACKAGES += \
-    vendor.lineage.livedisplay-service.sdm
-
-$(call soong_config_set_bool,livedisplay_sdm,enable_dm,false)
 
 # Media
 PRODUCT_COPY_FILES += \
@@ -361,6 +359,8 @@ PRODUCT_PACKAGES += \
 # Soong namespaces
 PRODUCT_SOONG_NAMESPACES += \
     $(LOCAL_PATH) \
+    $(LOCAL_PATH)/firmware \
+    hardware/mainline/common \
     hardware/google/interfaces \
     hardware/google/pixel/power-libperfmgr \
     hardware/lineage/interfaces/power-libperfmgr \
@@ -396,8 +396,6 @@ PRODUCT_PACKAGES += \
 
 # Wifi
 PRODUCT_PACKAGES += \
-    ipacm \
-    IPACM_cfg.xml \
     hostapd \
     WifiOverlay \
     wpa_supplicant \
@@ -413,11 +411,6 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/wifi/WCNSS_qcom_cfg.ini:$(TARGET_COPY_OUT_VENDOR)/etc/wifi/WCNSS_qcom_cfg.ini \
     $(LOCAL_PATH)/configs/wifi/p2p_supplicant_overlay.conf:$(TARGET_COPY_OUT_VENDOR)/etc/wifi/p2p_supplicant_overlay.conf \
     $(LOCAL_PATH)/configs/wifi/wpa_supplicant_overlay.conf:$(TARGET_COPY_OUT_VENDOR)/etc/wifi/wpa_supplicant_overlay.conf
-
-# WiFi firmware symlinks
-PRODUCT_PACKAGES += \
-    firmware_wlan_mac.bin_symlink \
-    firmware_WCNSS_qcom_cfg.ini_symlink
 
 # Call the proprietary setup
 $(call inherit-product, vendor/xiaomi/msm8998-common/msm8998-common-vendor.mk)

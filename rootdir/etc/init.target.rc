@@ -28,16 +28,9 @@
 #
 
 on init
-    # QSEE rpmb listener need symlink for bootdevice
-    wait /dev/block/platform/soc/${ro.boot.bootdevice}
-    symlink /dev/block/platform/soc/${ro.boot.bootdevice} /dev/block/bootdevice
-
-    # Start qseecomd early as we mount system/ early
-    # vold needs keymaster which needs qseecomd
-    start vendor.qseecomd
-
-    # Wait until TEE is ready
-    wait_for_prop vendor.sys.listeners.registered true
+    # Symlink bootdevice (first_stage_init creates /dev/block/by-name)
+    mkdir /dev/block/bootdevice
+    symlink /dev/block/by-name /dev/block/bootdevice/by-name
 
     write /sys/module/qpnp_rtc/parameters/poweron_alarm 1
 
@@ -248,11 +241,6 @@ on property:init.svc.vendor.per_mgr=running
 
 on property:sys.shutdown.requested=*
     stop vendor.per_proxy
-
-service vendor.qseecomd /vendor/bin/qseecomd
-    class core
-    user root
-    group root
 
 service vendor.thermal-engine /vendor/bin/thermal-engine -T
     class main

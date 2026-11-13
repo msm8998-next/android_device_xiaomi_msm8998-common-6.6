@@ -27,3 +27,6 @@ persist.log.tag.b/223498680=S
 persist.log.tag.TrafficStats=S
 persist.log.tag.ContrastColorUtil=S
 persist.log.tag.OpenGLRenderer=S
+
+# Ashmem via memfd (6.6)
+sys.use_memfd=true
