@@ -446,8 +446,12 @@ install_symlink {
 genrule {
     name: "msm8998_common_gen_firmware_ipa_fws.mbn",
     tools: ["pil-squasher"],
+    srcs: [
+        "//vendor/xiaomi/msm8998-common:msm8998_common_vendor_ipa_fws_mdt",
+        "//vendor/xiaomi/msm8998-common:msm8998_common_vendor_ipa_fws_segments",
+    ],
     out: ["ipa_fws.mbn"],
-    cmd: "$(location pil-squasher) $(out) ../../../../vendor/xiaomi/msm8998-common/proprietary/vendor/firmware/ipa_fws.mdt",
+    cmd: "$(location pil-squasher) $(out) $(location //vendor/xiaomi/msm8998-common:msm8998_common_vendor_ipa_fws_mdt)",
 }
 
 prebuilt_firmware {
