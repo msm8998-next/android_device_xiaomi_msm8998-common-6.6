@@ -91,8 +91,9 @@ BOARD_MESA3D_VULKAN_DRIVERS += freedreno
 BOARD_MESA3D_BUILD_LIBGBM := true
 BOARD_MESA3D_MESON_ARGS += \
     -Dprecomp-compiler=system \
-    -Dmesa-clc=system \
-    -Dspirv-tools=disabled
+    -Dmesa-clc=auto \
+    -Dspirv-tools=disabled \
+    --wrap-mode=nofallback
 
 # Metadata
 BOARD_USES_METADATA_PARTITION := true
